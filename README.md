@@ -1,49 +1,55 @@
 # 🧩 SanusVita.Framework.GenericRepository
 
-A lightweight micro-framework for generic and decoupled data access, compatible with **SQL Server** and **MySQL**, built using **Dapper** and **ADO.NET**. Designed for high-performance .NET applications that require fast and customizable CRUD operations without the overhead of a full ORM like Entity Framework.
+A lightweight and modular micro-framework for generic, high-performance, and database-agnostic data access. Built on top of **Dapper** and **ADO.NET**, this framework simplifies CRUD operations and advanced querying in **SQL Server** and **MySQL** without the complexity of a full ORM like Entity Framework.
 
 ---
 
 ## 🚀 Key Features
 
-- ✅ Compatible with **SQL Server** and **MySQL**
-- 📦 Built on top of **Dapper** (micro ORM)
-- 🔄 Full support for generic CRUD operations
+- ✅ Plug-and-play support for **SQL Server** and **MySQL**/**MariaDB**
+- ⚡ Built on **Dapper** for minimal overhead and fast execution
+- 🔁 Full support for **Generic CRUD** operations
 - 🔍 Advanced queries: `Find`, `FindAll`, `FindIn`, `FindBetween`
-- 🧠 Dynamic expression filtering
-- 📊 Support for stored procedures
-- 📂 Bulk insert support
-- 🧱 Based on the **Generic Repository** pattern
-- 📌 Designed for NuGet packaging and reusability
+- 🧠 Dynamic filtering using expression trees
+- 📊 Native support for stored procedures
+- 📥 Bulk insert operations
+- 🧱 Implements the **Generic Repository Pattern**
+- 📦 Ready for **NuGet** distribution and reuse
 
 ---
 
 ## 🛠️ Technologies Used
 
-| Technology     | Description                             |
-|----------------|-----------------------------------------|
-| C# / .NET 8    | Core programming language and framework |
-| Dapper         | Lightweight micro ORM                   |
-| ADO.NET        | Low-level database access               |
-| SQL Server     | Supported database engine               |
-| MySQL          | Supported database engine               |
+| Technology     | Purpose                                   |
+|----------------|-------------------------------------------|
+| C# / .NET 8    | Core framework and language               |
+| Dapper         | Micro ORM for high-performance queries    |
+| ADO.NET        | Direct database communication             |
+| SQL Server     | Supported database engine                 |
+| MySQL          | Supported database engine                 |
 
 ---
 
-## 🧪 Basic Usage Example
+## 🧪 Usage Example
 
-Programs.cs
+### 🔧 Register the Repository - Program.cs
 
-SQLServer
-var connectionString = Environment.GetEnvironmentVariable("SqlServer");
-builder.Services.AddTransient<IRepository<SqlServerRepository>>(x => new SqlServerRepository(connectionString!));
+```csharp
+// For SQL Server
+var sqlConnectionString = Environment.GetEnvironmentVariable("SqlServer");
+builder.Services.AddTransient<IRepository<SqlServerRepository>>(x =>
+    new SqlServerRepository(sqlConnectionString!));
 
-MySQL or MariaDB
-var connectionString = Environment.GetEnvironmentVariable("MySQL");
-builder.Services.AddTransient<IRepository<MySqlRepository>>(x => new MySqlRepository(connectionString!));
+// For MySQL or MariaDB
+var mysqlConnectionString = Environment.GetEnvironmentVariable("MySQL");
+builder.Services.AddTransient<IRepository<MySqlRepository>>(x =>
+    new MySqlRepository(mysqlConnectionString!));
 
-class query
+```
 
+## Example use
+
+```csharp
 public class Genders
 {
     public int Id { get; set; }
@@ -60,20 +66,20 @@ public class GendersQuery(IRepository<SqlServerRepository> query, LanguageServic
         {
             var language = languageService.GetLanguageFromHeader();
             var get = await query.FindAll<Genders>();
+
             if (get.Count == 0)
             {
-                response.StatusCode = (int)HttpStatusCode.NoContent;
+                response.StatusCode = 204;
                 response.Message = language == Language.English
                     ? "There are no genders available to display."
-                    : "No hay generos disponibles para mostrar.";
-                response.Entity = null;
+                    : "No hay géneros disponibles para mostrar.";
                 return response;
             }
-            
+
             response.StatusCode = 200;
             response.Message = language == Language.English
                 ? "Genders retrieved successfully."
-                : "Se obtuvieron los generos correctamente.";
+                : "Se obtuvieron los géneros correctamente.";
             response.Entity = get;
             return response;
         }
@@ -81,13 +87,12 @@ public class GendersQuery(IRepository<SqlServerRepository> query, LanguageServic
         {
             var language = languageService.GetLanguageFromHeader();
             response.StatusCode = 500;
-            response.Error = e.Message;
             response.Message = language == Language.English
                 ? "An error occurred while retrieving the data."
-                : "Error al obtener los datos.";
-            response.Entity = null;
+                : "Ocurrió un error al obtener los datos.";
+            response.Error = e.Message;
             return response;
         }
     }
 }
-
+```
