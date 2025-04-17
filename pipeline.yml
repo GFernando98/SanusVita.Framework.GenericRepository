@@ -9,19 +9,19 @@ steps:
     displayName: 'dotnet restore'
     inputs:
       command: restore
-      projects: SanusVita.Framework.DependencyAnnotation/SanusVita.Framework.DependencyAnnotation.csproj
+      projects: SanusVita.Framework.GenericRepository/SanusVita.Framework.GenericRepository.csproj
       vstsFeed: '3335ebaf-9c07-4f46-ab9c-e603677dd64f/SanusVita'
 
   - task: DotNetCoreCLI@2
     displayName: 'dotnet build'
     inputs:
-      projects: SanusVita.Framework.DependencyAnnotation/SanusVita.Framework.DependencyAnnotation.csproj
+      projects: SanusVita.Framework.GenericRepository/SanusVita.Framework.GenericRepository.csproj
 
   - task: DotNetCoreCLI@2
     displayName: 'dotnet pack'
     inputs:
       command: pack
-      packagesToPack: SanusVita.Framework.DependencyAnnotation/SanusVita.Framework.DependencyAnnotation.csproj
+      packagesToPack: SanusVita.Framework.GenericRepository/SanusVita.Framework.GenericRepository.csproj
       configuration: Release
       outputDir: '$(Build.ArtifactStagingDirectory)'
 
