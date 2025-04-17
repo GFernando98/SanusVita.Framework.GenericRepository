@@ -1,0 +1,33 @@
+﻿trigger:
+  - main
+
+pool:
+  name: Default
+
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet restore'
+    inputs:
+      command: restore
+      projects: SanusVita.Framework.DependencyAnnotation/SanusVita.Framework.DependencyAnnotation.csproj
+      vstsFeed: '3335ebaf-9c07-4f46-ab9c-e603677dd64f/SanusVita'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet build'
+    inputs:
+      projects: SanusVita.Framework.DependencyAnnotation/SanusVita.Framework.DependencyAnnotation.csproj
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet pack'
+    inputs:
+      command: pack
+      packagesToPack: SanusVita.Framework.DependencyAnnotation/SanusVita.Framework.DependencyAnnotation.csproj
+      configuration: Release
+      outputDir: '$(Build.ArtifactStagingDirectory)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet push'
+    inputs:
+      command: push
+      publishVstsFeed: '3335ebaf-9c07-4f46-ab9c-e603677dd64f/SanusVita'
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
